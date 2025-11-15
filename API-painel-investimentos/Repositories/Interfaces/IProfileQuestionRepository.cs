@@ -1,6 +1,6 @@
 ﻿using API_painel_investimentos.Models;
 
-namespace API_painel_investimentos.Repositories;
+namespace API_painel_investimentos.Repositories.Interfaces;
 
 public interface IProfileQuestionRepository
 {

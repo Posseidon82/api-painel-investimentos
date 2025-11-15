@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using API_painel_investimentos.Models;
 
-namespace API_painel_investimentos.Repositories;
+namespace API_painel_investimentos.Infraestructure.Data;
 
 // Contexto do Banco de Dados
 public class SqliteDbContext : DbContext
 {
-    public DbSet<Simulacao> Simulacoes { get; set; }
+    //public DbSet<Simulacao> Simulacoes { get; set; }
     //public DbSet<ParcelaSimulacao> ParcelasSimulacao { get; set; }
 
     public SqliteDbContext(DbContextOptions<SqliteDbContext> options) : base(options)

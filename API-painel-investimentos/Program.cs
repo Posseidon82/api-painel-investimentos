@@ -1,10 +1,14 @@
 
+using API_painel_investimentos.Infraestructure.Data;
+using API_painel_investimentos.Infrastructure.Data;
 using API_painel_investimentos.Models;
 using API_painel_investimentos.Repositories;
+using API_painel_investimentos.Repositories.Interfaces;
 using API_painel_investimentos.Services;
 using API_painel_investimentos.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SQLitePCL;
 using System.Text;
@@ -12,19 +16,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-//Configuração do SQlite
-builder.Services.AddDbContext<SqliteDbContext>(options =>
-{
-    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
-
-    // Habilitar logging de queries em desenvolvimento
-    if (builder.Environment.IsDevelopment())
-    {
-        options.EnableSensitiveDataLogging();
-        options.EnableDetailedErrors();
-    }
-});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -56,20 +47,39 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Database Context
+// Database
 builder.Services.AddDbContext<InvestorProfileContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection")));
 
-// MediatR
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(CalculateProfileCommandHandler).Assembly));
+// DbContext
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection")));
+
+//Configuração do SQlite
+builder.Services.AddDbContext<SqliteDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
+
+    // Habilitar logging de queries em desenvolvimento
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+        options.EnableDetailedErrors();
+    }
+});
 
 // Repositories
 builder.Services.AddScoped<IInvestorProfileRepository, InvestorProfileRepository>();
 builder.Services.AddScoped<IProfileQuestionRepository, ProfileQuestionRepository>();
+//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Services
+builder.Services.AddScoped<IInvestorProfileService, InvestorProfileService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IProfileCalculationService, ProfileCalculationService>();
+
+// Logging
+builder.Services.AddLogging();
 
 var app = builder.Build();
 

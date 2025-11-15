@@ -1,19 +1,38 @@
 ﻿using API_painel_investimentos.DTO;
+using API_painel_investimentos.Exceptions;
+using API_painel_investimentos.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers;
 
+/// <summary>
+/// 
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class InvestorProfileController : ControllerBase
 {
-    private readonly IMediator _mediator;
+    private readonly IInvestorProfileService _profileService;
+    private readonly ILogger<InvestorProfileController> _logger;
 
-    public InvestorProfileController(IMediator mediator)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="profileService"></param>
+    /// <param name="logger"></param>
+    public InvestorProfileController(
+        IInvestorProfileService profileService,
+        ILogger<InvestorProfileController> logger)
     {
-        _mediator = mediator;
+        _profileService = profileService;
+        _logger = logger;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost("calculate")]
     [ProducesResponseType(typeof(ProfileResultDto), 200)]
     [ProducesResponseType(400)]
@@ -21,16 +40,26 @@ public class InvestorProfileController : ControllerBase
     {
         try
         {
-            var command = new CalculateProfileCommand(request.UserId, request.Answers);
-            var result = await _mediator.Send(command);
+            var result = await _profileService.CalculateProfileAsync(request.UserId, request.Answers);
             return Ok(result);
         }
         catch (ArgumentException ex)
         {
+            _logger.LogWarning(ex, "Invalid arguments in CalculateProfile");
             return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calculating profile");
+            return StatusCode(500, "Internal server error");
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(ProfileResultDto), 200)]
     [ProducesResponseType(404)]
@@ -38,13 +67,17 @@ public class InvestorProfileController : ControllerBase
     {
         try
         {
-            var query = new GetProfileQuery(userId);
-            var result = await _mediator.Send(query);
+            var result = await _profileService.GetUserProfileAsync(userId);
             return Ok(result);
         }
         catch (NotFoundException)
         {
             return NotFound();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting profile for user {UserId}", userId);
+            return StatusCode(500, "Internal server error");
         }
     }
 }

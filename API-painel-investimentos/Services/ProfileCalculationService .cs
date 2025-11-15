@@ -12,6 +12,12 @@ public class ProfileCalculationService : IProfileCalculationService
         ["Aggressive"] = (71, 100)
     };
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="answers"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public (string ProfileType, int Score) CalculateProfile(List<QuestionAnswer> answers)
     {
         if (!answers.Any())
@@ -23,6 +29,11 @@ public class ProfileCalculationService : IProfileCalculationService
         return (profileType, totalScore);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="score"></param>
+    /// <returns></returns>
     private string DetermineProfileType(int score)
     {
         foreach (var range in _profileRanges)

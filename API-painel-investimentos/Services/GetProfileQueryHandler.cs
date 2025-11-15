@@ -1,5 +1,6 @@
 ﻿using API_painel_investimentos.DTO;
-using API_painel_investimentos.Repositories;
+using API_painel_investimentos.Exceptions;
+using API_painel_investimentos.Repositories.Interfaces;
 
 namespace API_painel_investimentos.Services;
 

@@ -1,6 +1,6 @@
 ﻿using API_painel_investimentos.DTO;
 using API_painel_investimentos.Models;
-using API_painel_investimentos.Repositories;
+using API_painel_investimentos.Repositories.Interfaces;
 using API_painel_investimentos.Services.Interfaces;
 
 namespace API_painel_investimentos.Services;
