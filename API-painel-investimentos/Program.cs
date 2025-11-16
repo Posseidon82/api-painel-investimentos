@@ -4,10 +4,14 @@ using API_painel_investimentos.Repositories.Portfolio;
 using API_painel_investimentos.Repositories.Portfolio.Interfaces;
 using API_painel_investimentos.Repositories.Profile;
 using API_painel_investimentos.Repositories.Profile.Interfaces;
+using API_painel_investimentos.Repositories.Simulation;
+using API_painel_investimentos.Repositories.Simulation.Interfaces;
 using API_painel_investimentos.Services.Portfolio;
 using API_painel_investimentos.Services.Portfolio.Interfaces;
 using API_painel_investimentos.Services.Profile;
 using API_painel_investimentos.Services.Profile.Interfaces;
+using API_painel_investimentos.Services.Simulation;
+using API_painel_investimentos.Services.Simulation.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -63,13 +67,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Repositories
 builder.Services.AddScoped<IInvestorProfileRepository, InvestorProfileRepository>();
 builder.Services.AddScoped<IProfileQuestionRepository, ProfileQuestionRepository>();
+builder.Services.AddScoped<IInvestmentProductRepository, InvestmentProductRepository>();
+builder.Services.AddScoped<ISimulationRepository, SimulationRepository>();
 
 // Services
 builder.Services.AddScoped<IInvestorProfileService, InvestorProfileService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IProfileCalculationService, ProfileCalculationService>();
 builder.Services.AddScoped<IInvestmentRecommendationService, InvestmentRecommendationService>();
-builder.Services.AddScoped<IInvestmentProductRepository, InvestmentProductRepository>();
+builder.Services.AddScoped<IInvestmentSimulationService, InvestmentSimulationService>();
+builder.Services.AddScoped<ISimulationStatsService, SimulationStatsService>();
 
 // Logging
 builder.Services.AddLogging();

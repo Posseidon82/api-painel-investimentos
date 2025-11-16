@@ -1,6 +1,7 @@
 ﻿using API_painel_investimentos.Models;
 using API_painel_investimentos.Models.Portfolio;
 using API_painel_investimentos.Models.Profile;
+using API_painel_investimentos.Models.Simulation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -23,6 +24,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<QuestionAnswerOption> QuestionAnswerOptions { get; set; }
     public DbSet<ProfileAnswer> ProfileAnswers { get; set; }
     public DbSet<InvestmentProduct> InvestmentProducts { get; set; }
+    public DbSet<InvestmentSimulation> InvestmentSimulations { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -194,6 +196,49 @@ public class ApplicationDbContext : DbContext
 
         // Seed data para produtos de investimento
         SeedInvestmentProducts(modelBuilder);
+
+        // Configuração da entidade InvestmentSimulation
+        modelBuilder.Entity<InvestmentSimulation>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+
+            entity.Property(s => s.ProfileType)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(s => s.InvestedAmount)
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            entity.Property(s => s.TotalReturn)
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            entity.Property(s => s.NetReturn)
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            entity.Property(s => s.TotalAmount)
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            entity.Property(s => s.InvestmentMonths)
+                .IsRequired();
+
+            entity.Property(s => s.SimulationDetails)
+                .IsRequired()
+                .HasColumnType("nvarchar(max)"); // JSON details
+
+            entity.Property(s => s.SimulatedAt)
+                .IsRequired();
+
+            // Índices para performance
+            entity.HasIndex(s => s.UserId)
+                .HasDatabaseName("IX_InvestmentSimulations_UserId");
+
+            entity.HasIndex(s => new { s.UserId, s.SimulatedAt })
+                .HasDatabaseName("IX_InvestmentSimulations_UserId_SimulatedAt");
+        });
     }
 
     /// <summary>
