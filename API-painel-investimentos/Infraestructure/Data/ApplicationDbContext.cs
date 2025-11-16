@@ -132,39 +132,19 @@ public class ApplicationDbContext : DbContext
         {
             new ProfileQuestion(
                 "Qual é o seu principal objetivo com este investimento?",
-                "Objectives", 25, 1)
-            {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.UtcNow
-            },
+                "Objectives", 25, 1), 
             new ProfileQuestion(
                 "Em quanto tempo você precisará deste dinheiro?",
-                "TimeHorizon", 25, 2)
-            {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.UtcNow
-            },
+                "TimeHorizon", 25, 2), 
             new ProfileQuestion(
                 "Qual o nível máximo de perda temporária você aceitaria?",
-                "RiskTolerance", 30, 3)
-            {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.UtcNow
-            },
+                "RiskTolerance", 30, 3), 
             new ProfileQuestion(
                 "Como você descreveria seu conhecimento sobre investimentos?",
-                "Knowledge", 10, 4)
-            {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.UtcNow
-            },
+                "Knowledge", 10, 4), 
             new ProfileQuestion(
                 "Este investimento representa qual percentual do seu patrimônio total?",
                 "FinancialSituation", 10, 5)
-            {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.UtcNow
-            }
         };
 
         modelBuilder.Entity<ProfileQuestion>().HasData(questions);
@@ -180,45 +160,45 @@ public class ApplicationDbContext : DbContext
                 case "Objectives":
                     answerOptions.AddRange(new[]
                     {
-                        new QuestionAnswerOption(question.Id, "Preservação do capital e liquidez imediata", 1, "Foco total em segurança") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Acumular patrimônio para um objetivo de médio prazo (3 a 5 anos)", 5, "Equilíbrio") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Crescimento do patrimônio no longo prazo (acima de 10 anos)", 10, "Foco em retorno") { Id = Guid.NewGuid() }
+                        new QuestionAnswerOption(question.Id, "Preservação do capital e liquidez imediata", 1, "Foco total em segurança"),
+                        new QuestionAnswerOption(question.Id, "Acumular patrimônio para um objetivo de médio prazo (3 a 5 anos)", 5, "Equilíbrio"),
+                        new QuestionAnswerOption(question.Id, "Crescimento do patrimônio no longo prazo (acima de 10 anos)", 10, "Foco em retorno")
                     });
                     break;
 
                 case "TimeHorizon":
                     answerOptions.AddRange(new[]
                     {
-                        new QuestionAnswerOption(question.Id, "Até 1 ano", 1, "Curto prazo") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "De 2 a 5 anos", 5, "Médio prazo") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Mais de 5 anos", 10, "Longo prazo") { Id = Guid.NewGuid() }
+                        new QuestionAnswerOption(question.Id, "Até 1 ano", 1, "Curto prazo"),
+                        new QuestionAnswerOption(question.Id, "De 2 a 5 anos", 5, "Médio prazo"),
+                        new QuestionAnswerOption(question.Id, "Mais de 5 anos", 10, "Longo prazo")
                     });
                     break;
 
                 case "RiskTolerance":
                     answerOptions.AddRange(new[]
                     {
-                        new QuestionAnswerOption(question.Id, "Até 5% - Prefiro não ter perdas, mesmo que os ganhos sejam baixos", 1, "Baixa tolerância") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Entre 5% e 15% - Entendo que flutuações são normais", 10, "Tolerância moderada") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Acima de 15% - Estou ciente dos riscos e focado no potencial de retorno", 20, "Alta tolerância") { Id = Guid.NewGuid() }
+                        new QuestionAnswerOption(question.Id, "Até 5% - Prefiro não ter perdas, mesmo que os ganhos sejam baixos", 1, "Baixa tolerância"),
+                        new QuestionAnswerOption(question.Id, "Entre 5% e 15% - Entendo que flutuações são normais", 10, "Tolerância moderada"),
+                        new QuestionAnswerOption(question.Id, "Acima de 15% - Estou ciente dos riscos e focado no potencial de retorno", 20, "Alta tolerância")
                     });
                     break;
 
                 case "Knowledge":
                     answerOptions.AddRange(new[]
                     {
-                        new QuestionAnswerOption(question.Id, "Iniciante - Conheço apenas Poupança e CDB", 1, "Conhecimento básico") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Intermediário - Entendo Tesouro Direto, LCI/LCA e Fundos", 5, "Conhecimento intermediário") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Avançado - Tenho experiência com Ações, FIIs e derivativos", 10, "Conhecimento avançado") { Id = Guid.NewGuid() }
+                        new QuestionAnswerOption(question.Id, "Iniciante - Conheço apenas Poupança e CDB", 1, "Conhecimento básico"),
+                        new QuestionAnswerOption(question.Id, "Intermediário - Entendo Tesouro Direto, LCI/LCA e Fundos", 5, "Conhecimento intermediário"),
+                        new QuestionAnswerOption(question.Id, "Avançado - Tenho experiência com Ações, FIIs e derivativos", 10, "Conhecimento avançado")
                     });
                     break;
 
                 case "FinancialSituation":
                     answerOptions.AddRange(new[]
                     {
-                        new QuestionAnswerOption(question.Id, "Acima de 50% - Qualquer perda teria impacto significativo", 1, "Alto impacto") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Entre 10% e 50% - Uma perda seria incômoda, mas não catastrófica", 5, "Impacto moderado") { Id = Guid.NewGuid() },
-                        new QuestionAnswerOption(question.Id, "Abaixo de 10% - Tenho patrimônio sólido e posso assumir riscos", 10, "Baixo impacto") { Id = Guid.NewGuid() }
+                        new QuestionAnswerOption(question.Id, "Acima de 50% - Qualquer perda teria impacto significativo", 1, "Alto impacto"),
+                        new QuestionAnswerOption(question.Id, "Entre 10% e 50% - Uma perda seria incômoda, mas não catastrófica", 5, "Impacto moderado"),
+                        new QuestionAnswerOption(question.Id, "Abaixo de 10% - Tenho patrimônio sólido e posso assumir riscos", 10, "Baixo impacto")
                     });
                     break;
             }
@@ -235,12 +215,12 @@ public class ApplicationDbContext : DbContext
 
         foreach (var entry in entries)
         {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedAt = DateTime.UtcNow;
-            }
+            //if (entry.State == EntityState.Added)
+            //{
+            //    entry.Entity.CreatedAt = DateTime.UtcNow;
+            //}
 
-            entry.Entity.UpdatedAt = DateTime.UtcNow;
+            entry.Entity.UpdateTimestamps();
         }
 
         return await base.SaveChangesAsync(cancellationToken);
