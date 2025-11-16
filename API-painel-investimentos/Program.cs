@@ -1,9 +1,13 @@
 
 using API_painel_investimentos.Infraestructure.Data;
-using API_painel_investimentos.Repositories;
-using API_painel_investimentos.Repositories.Interfaces;
-using API_painel_investimentos.Services;
-using API_painel_investimentos.Services.Interfaces;
+using API_painel_investimentos.Repositories.Portfolio;
+using API_painel_investimentos.Repositories.Portfolio.Interfaces;
+using API_painel_investimentos.Repositories.Profile;
+using API_painel_investimentos.Repositories.Profile.Interfaces;
+using API_painel_investimentos.Services.Portfolio;
+using API_painel_investimentos.Services.Portfolio.Interfaces;
+using API_painel_investimentos.Services.Profile;
+using API_painel_investimentos.Services.Profile.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -64,6 +68,8 @@ builder.Services.AddScoped<IProfileQuestionRepository, ProfileQuestionRepository
 builder.Services.AddScoped<IInvestorProfileService, InvestorProfileService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IProfileCalculationService, ProfileCalculationService>();
+builder.Services.AddScoped<IInvestmentRecommendationService, InvestmentRecommendationService>();
+builder.Services.AddScoped<IInvestmentProductRepository, InvestmentProductRepository>();
 
 // Logging
 builder.Services.AddLogging();
