@@ -1,4 +1,4 @@
-﻿using API_painel_investimentos.Infrastructure.Data;
+﻿using API_painel_investimentos.Infraestructure.Data;
 using API_painel_investimentos.Models;
 using API_painel_investimentos.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

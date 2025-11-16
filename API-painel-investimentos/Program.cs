@@ -1,16 +1,12 @@
 
 using API_painel_investimentos.Infraestructure.Data;
-using API_painel_investimentos.Infrastructure.Data;
-using API_painel_investimentos.Models;
 using API_painel_investimentos.Repositories;
 using API_painel_investimentos.Repositories.Interfaces;
 using API_painel_investimentos.Services;
 using API_painel_investimentos.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using SQLitePCL;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,16 +43,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Database
-builder.Services.AddDbContext<InvestorProfileContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection")));
-
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection")));
-
-//Configuração do SQlite
-builder.Services.AddDbContext<SqliteDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
 
@@ -71,7 +59,6 @@ builder.Services.AddDbContext<SqliteDbContext>(options =>
 // Repositories
 builder.Services.AddScoped<IInvestorProfileRepository, InvestorProfileRepository>();
 builder.Services.AddScoped<IProfileQuestionRepository, ProfileQuestionRepository>();
-//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Services
 builder.Services.AddScoped<IInvestorProfileService, InvestorProfileService>();
@@ -90,16 +77,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     // Cria banco de dados e tabelas automaticamente
-    //using (var scope = app.Services.CreateScope())
-    //{
-    //    var context = scope.ServiceProvider.GetRequiredService<SqliteDbContext>();
-    //    context.Database.EnsureCreated();
-    //}
-}
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        context.Database.EnsureCreated();
+    }
 
-// Adicionar tratamento de exceções
-if (app.Environment.IsDevelopment())
-{
+    // Adicionar tratamento de exceções
     app.UseDeveloperExceptionPage();
 }
 else

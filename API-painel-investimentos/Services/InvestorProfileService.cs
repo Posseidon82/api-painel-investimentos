@@ -12,22 +12,19 @@ public class InvestorProfileService : IInvestorProfileService
     private readonly IInvestorProfileRepository _profileRepository;
     private readonly IProfileQuestionRepository _questionRepository;
     private readonly IProfileCalculationService _calculationService;
-    //private readonly IUnitOfWork _unitOfWork;
-    private readonly InvestorProfileContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly ILogger<InvestorProfileService> _logger;
 
     public InvestorProfileService(
         IInvestorProfileRepository profileRepository,
         IProfileQuestionRepository questionRepository,
         IProfileCalculationService calculationService,
-        //IUnitOfWork unitOfWork,
-        InvestorProfileContext context,
+        ApplicationDbContext context,
         ILogger<InvestorProfileService> logger)
     {
         _profileRepository = profileRepository;
         _questionRepository = questionRepository;
         _calculationService = calculationService;
-        //_unitOfWork = unitOfWork;
         _context = context;
         _logger = logger;
     }

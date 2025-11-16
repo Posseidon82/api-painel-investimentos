@@ -2,8 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace API_painel_investimentos.Infrastructure.Data;
+namespace API_painel_investimentos.Infraestructure.Data;
 
+/// <summary>
+/// Represents the database context for managing investor profiles and related entities.
+/// </summary>
+/// <remarks>This context is used to interact with the database for operations related to investor profiles, 
+/// profile questions, answer options, and answers. It provides DbSet properties for each entity type  and configures
+/// entity relationships and constraints during model creation.</remarks>
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -125,6 +131,13 @@ public class ApplicationDbContext : DbContext
         SeedData(modelBuilder);
     }
 
+    /// <summary>
+    /// Seeds initial data into the model using the specified <see cref="ModelBuilder"/>.
+    /// </summary>
+    /// <remarks>This method populates the model with predefined profile questions and their associated answer
+    /// options. It is typically called during the model configuration phase to ensure that the database is initialized
+    /// with default data.</remarks>
+    /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to configure the entity data to be seeded.</param>
     private void SeedData(ModelBuilder modelBuilder)
     {
         // Seed para ProfileQuestions
