@@ -6,12 +6,16 @@ using API_painel_investimentos.Repositories.Profile;
 using API_painel_investimentos.Repositories.Profile.Interfaces;
 using API_painel_investimentos.Repositories.Simulation;
 using API_painel_investimentos.Repositories.Simulation.Interfaces;
+using API_painel_investimentos.Repositories.User;
+using API_painel_investimentos.Repositories.User.Interfaces;
 using API_painel_investimentos.Services.Portfolio;
 using API_painel_investimentos.Services.Portfolio.Interfaces;
 using API_painel_investimentos.Services.Profile;
 using API_painel_investimentos.Services.Profile.Interfaces;
 using API_painel_investimentos.Services.Simulation;
 using API_painel_investimentos.Services.Simulation.Interfaces;
+using API_painel_investimentos.Services.User;
+using API_painel_investimentos.Services.User.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -69,6 +73,7 @@ builder.Services.AddScoped<IInvestorProfileRepository, InvestorProfileRepository
 builder.Services.AddScoped<IProfileQuestionRepository, ProfileQuestionRepository>();
 builder.Services.AddScoped<IInvestmentProductRepository, InvestmentProductRepository>();
 builder.Services.AddScoped<ISimulationRepository, SimulationRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Services
 builder.Services.AddScoped<IInvestorProfileService, InvestorProfileService>();
@@ -77,11 +82,28 @@ builder.Services.AddScoped<IProfileCalculationService, ProfileCalculationService
 builder.Services.AddScoped<IInvestmentRecommendationService, InvestmentRecommendationService>();
 builder.Services.AddScoped<IInvestmentSimulationService, InvestmentSimulationService>();
 builder.Services.AddScoped<ISimulationStatsService, SimulationStatsService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Password Hasher
+builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
 // Logging
 builder.Services.AddLogging();
 
+// Configurar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200", "https://seusite.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

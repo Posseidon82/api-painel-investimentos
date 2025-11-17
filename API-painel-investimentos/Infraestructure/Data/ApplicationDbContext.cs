@@ -2,6 +2,7 @@
 using API_painel_investimentos.Models.Portfolio;
 using API_painel_investimentos.Models.Profile;
 using API_painel_investimentos.Models.Simulation;
+using API_painel_investimentos.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -25,6 +26,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProfileAnswer> ProfileAnswers { get; set; }
     public DbSet<InvestmentProduct> InvestmentProducts { get; set; }
     public DbSet<InvestmentSimulation> InvestmentSimulations { get; set; }
+    public DbSet<UserEntity> Users { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -207,18 +209,22 @@ public class ApplicationDbContext : DbContext
                 .IsRequired();
 
             entity.Property(s => s.InvestedAmount)
+                .HasConversion<decimal>()
                 .HasPrecision(18, 2)
                 .IsRequired();
 
             entity.Property(s => s.TotalReturn)
+                .HasConversion<decimal>()
                 .HasPrecision(18, 2)
                 .IsRequired();
 
             entity.Property(s => s.NetReturn)
+                .HasConversion<decimal>()
                 .HasPrecision(18, 2)
                 .IsRequired();
 
             entity.Property(s => s.TotalAmount)
+                .HasConversion<decimal>()
                 .HasPrecision(18, 2)
                 .IsRequired();
 
@@ -227,7 +233,7 @@ public class ApplicationDbContext : DbContext
 
             entity.Property(s => s.SimulationDetails)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)"); // JSON details
+                .HasColumnType("TEXT"); // JSON details
 
             entity.Property(s => s.SimulatedAt)
                 .IsRequired();
@@ -238,6 +244,45 @@ public class ApplicationDbContext : DbContext
 
             entity.HasIndex(s => new { s.UserId, s.SimulatedAt })
                 .HasDatabaseName("IX_InvestmentSimulations_UserId_SimulatedAt");
+        });
+
+        // Configuração da entidade User
+        modelBuilder.Entity<UserEntity>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+
+            entity.Property(u => u.Name)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(u => u.Cpf)
+                .HasMaxLength(11)
+                .IsRequired();
+
+            entity.Property(u => u.Email)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(u => u.PasswordHash)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            entity.Property(u => u.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+
+            // Índices únicos
+            entity.HasIndex(u => u.Cpf)
+                .IsUnique()
+                .HasDatabaseName("IX_Users_Cpf");
+
+            entity.HasIndex(u => u.Email)
+                .IsUnique()
+                .HasDatabaseName("IX_Users_Email");
+
+            // Índice para busca por nome
+            entity.HasIndex(u => u.Name)
+                .HasDatabaseName("IX_Users_Name");
         });
     }
 
