@@ -5,6 +5,7 @@ using API_painel_investimentos.Models;
 using API_painel_investimentos.Models.Profile;
 using API_painel_investimentos.Repositories.Profile.Interfaces;
 using API_painel_investimentos.Services.Profile.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_painel_investimentos.Services.Profile;
 
@@ -137,30 +138,55 @@ public class InvestorProfileService : IInvestorProfileService
     /// <returns></returns>
     private async Task<InvestorProfile> SaveOrUpdateProfileAsync(Guid userId, string profileType, int score, List<UserAnswerDto> userAnswers)
     {
-        var existingProfile = await _profileRepository.GetByUserIdAsync(userId);
+        //var existingProfile = await _profileRepository.GetByUserIdAsync(userId);
+        // Buscar o perfil SEM AsNoTracking para que o EF rastreie as mudanças
+        var existingProfile = await _context.InvestorProfiles
+            .Include(ip => ip.Answers)
+            .FirstOrDefaultAsync(ip => ip.UserId == userId);
 
         if (existingProfile != null)
         {
             // Atualizar perfil existente
             existingProfile.UpdateProfile(profileType, score);
 
-            // Remover respostas antigas
-            await _profileRepository.ClearProfileAnswersAsync(existingProfile.Id);
+            // Remover respostas antigas e salvar imediatamente
+            //await _profileRepository.ClearProfileAnswersAsync(existingProfile.Id);
+
+            // Limpar respostas antigas
+            _context.ProfileAnswers.RemoveRange(existingProfile.Answers);
+            await _context.SaveChangesAsync();
 
             // Adicionar novas respostas
-            await AddProfileAnswersAsync(existingProfile.Id, userAnswers);
+            //await AddProfileAnswersAsync(existingProfile.Id, userAnswers);
 
-            await _profileRepository.UpdateAsync(existingProfile);
+            //await _profileRepository.UpdateAsync(existingProfile);
+
+            // Adicionar novas respostas
+            foreach (var userAnswer in userAnswers)
+            {
+                var profileAnswer = new ProfileAnswer(existingProfile.Id, userAnswer.QuestionId, userAnswer.AnswerOptionId);
+                _context.ProfileAnswers.Add(profileAnswer);
+            }
+
+            // O perfil já está sendo rastreado, não precisa chamar Update explicitamente
             return existingProfile;
         }
         else
         {
             // Criar novo perfil
             var newProfile = new InvestorProfile(userId, profileType, score, DateTime.UtcNow);
-            await _profileRepository.CreateAsync(newProfile);
+            //await _profileRepository.CreateAsync(newProfile);
+            _context.InvestorProfiles.Add(newProfile);
+            // SALVAR para criar o perfil primeiro
+            await _context.SaveChangesAsync();
 
             // Adicionar respostas
-            await AddProfileAnswersAsync(newProfile.Id, userAnswers);
+            //await AddProfileAnswersAsync(newProfile.Id, userAnswers);
+            foreach (var userAnswer in userAnswers)
+            {
+                var profileAnswer = new ProfileAnswer(newProfile.Id, userAnswer.QuestionId, userAnswer.AnswerOptionId);
+                _context.ProfileAnswers.Add(profileAnswer);
+            }
 
             return newProfile;
         }

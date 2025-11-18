@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API_painel_investimentos.Controllers.Profile;
 
 /// <summary>
-/// 
+/// Gerencia os endpoints responsáveis por calcular e recuperar o perfil de investidor
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -29,7 +29,7 @@ public class InvestorProfileController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Calcula o perfil de investidor com base nas respostas do questionário de perfil
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
@@ -56,7 +56,7 @@ public class InvestorProfileController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Retorna o perfil de investidor anteriormente calculado para um usuário
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
