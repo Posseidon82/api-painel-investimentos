@@ -8,8 +8,14 @@ public interface IUserService
     Task<UserResponseDto?> GetUserByIdAsync(Guid userId);
     Task<UserResponseDto?> GetUserByCpfAsync(string cpf);
     Task<UserResponseDto?> GetUserByEmailAsync(string email);
+
+    Task<CheckUserExistsResponseDto> CheckUserExistsAsync(CheckUserExistsRequestDto request);
+
     Task<bool> UserExistsAsync(string cpf, string email);
+
     Task<bool> ValidatePasswordAsync(Guid userId, string password);
     Task UpdateUserAsync(Guid userId, UpdateUserRequestDto request);
     Task ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request);
+
+    Task<UserResponseDto?> GetUserByCredentialsAsync(string? cpf, string? email, string password);
 }

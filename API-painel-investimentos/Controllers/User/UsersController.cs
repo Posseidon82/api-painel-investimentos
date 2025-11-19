@@ -44,6 +44,7 @@ public class UsersController : ControllerBase
         }
     }
 
+
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(404)]
@@ -64,6 +65,7 @@ public class UsersController : ControllerBase
             return StatusCode(500, "Erro interno ao buscar usuário");
         }
     }
+
 
     [HttpGet("cpf/{cpf}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
@@ -86,6 +88,7 @@ public class UsersController : ControllerBase
         }
     }
 
+
     [HttpGet("email/{email}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(404)]
@@ -107,13 +110,18 @@ public class UsersController : ControllerBase
         }
     }
 
+
     [HttpPost("check-exists")]
-    [ProducesResponseType(typeof(bool), 200)]
-    public async Task<IActionResult> CheckUserExists([FromBody] CreateUserRequestDto request)
+    //[ProducesResponseType(typeof(bool), 200)]
+    [ProducesResponseType(typeof(CheckUserExistsResponseDto), 200)]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> CheckUserExists([FromBody] CheckUserExistsRequestDto request)
+    //public async Task<IActionResult> CheckUserExists([FromBody] CreateUserRequestDto request)
     {
         try
         {
-            var exists = await _userService.UserExistsAsync(request.Cpf, request.Email);
+            //var exists = await _userService.UserExistsAsync(request.Cpf, request.Email);
+            var exists = await _userService.CheckUserExistsAsync(request);
             return Ok(exists);
         }
         catch (Exception ex)
@@ -122,6 +130,30 @@ public class UsersController : ControllerBase
             return StatusCode(500, "Erro interno ao verificar usuário");
         }
     }
+
+
+    [HttpPost("authenticate")]
+    [ProducesResponseType(typeof(UserResponseDto), 200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> AuthenticateUser([FromBody] CheckUserExistsRequestDto request)
+    {
+        try
+        {
+            var user = await _userService.GetUserByCredentialsAsync(request.Cpf, request.Email, request.Password);
+
+            if (user == null)
+                return Unauthorized("CPF/Email ou senha incorretos");
+
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error authenticating user");
+            return StatusCode(500, "Erro interno ao autenticar usuário");
+        }
+    }
+
 
     [HttpPut("{userId}")]
     [ProducesResponseType(204)]
@@ -148,6 +180,7 @@ public class UsersController : ControllerBase
             return StatusCode(500, "Erro interno ao atualizar usuário");
         }
     }
+
 
     [HttpPut("{userId}/change-password")]
     [ProducesResponseType(204)]

@@ -1,5 +1,6 @@
 
 using API_painel_investimentos.Infraestructure.Data;
+using API_painel_investimentos.Models.Authentication;
 using API_painel_investimentos.Repositories.Portfolio;
 using API_painel_investimentos.Repositories.Portfolio.Interfaces;
 using API_painel_investimentos.Repositories.Profile;
@@ -8,6 +9,8 @@ using API_painel_investimentos.Repositories.Simulation;
 using API_painel_investimentos.Repositories.Simulation.Interfaces;
 using API_painel_investimentos.Repositories.User;
 using API_painel_investimentos.Repositories.User.Interfaces;
+using API_painel_investimentos.Services.Authentication;
+using API_painel_investimentos.Services.Authentication.Interfaces;
 using API_painel_investimentos.Services.Portfolio;
 using API_painel_investimentos.Services.Portfolio.Interfaces;
 using API_painel_investimentos.Services.Profile;
@@ -29,9 +32,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
 // Configurar JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
+var secretKey = jwtSettings["SecretKey"];
+
+if (string.IsNullOrEmpty(secretKey) || secretKey.Length < 32)
+{
+    throw new InvalidOperationException("JWT SecretKey must be at least 32 characters long and not empty");
+}
+
+var secretKeyBytes = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
+
+builder.Services.Configure<JwtSettings>(jwtSettings);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -42,18 +56,35 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
+        ValidateIssuer = true,
         ValidIssuer = jwtSettings["Issuer"],
+        ValidateAudience = true,
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+        ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
+    };
+
+    // Para Swagger/API testing
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine("Token validated successfully");
+            return Task.CompletedTask;
+        }
     };
 });
 
 builder.Services.AddAuthorization();
+
+
 
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -83,6 +114,9 @@ builder.Services.AddScoped<IInvestmentRecommendationService, InvestmentRecommend
 builder.Services.AddScoped<IInvestmentSimulationService, InvestmentSimulationService>();
 builder.Services.AddScoped<ISimulationStatsService, SimulationStatsService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+// Registrar o serviço JWT
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Password Hasher
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();

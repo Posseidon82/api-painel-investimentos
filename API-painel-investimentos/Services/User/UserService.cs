@@ -1,5 +1,6 @@
 ﻿using API_painel_investimentos.DTO.User;
 using API_painel_investimentos.Exceptions;
+using API_painel_investimentos.Infraestructure.Data;
 using API_painel_investimentos.Models.User;
 using API_painel_investimentos.Repositories.User.Interfaces;
 using API_painel_investimentos.Services.User.Interfaces;
@@ -11,18 +12,27 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly ApplicationDbContext _context;
     private readonly ILogger<UserService> _logger;
 
     public UserService(
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
+        ApplicationDbContext context,
         ILogger<UserService> logger)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
+        _context = context;
         _logger = logger;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public async Task<CreateUserResponseDto> CreateUserAsync(CreateUserRequestDto request)
     {
         try
@@ -74,6 +84,11 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     public async Task<UserResponseDto?> GetUserByIdAsync(Guid userId)
     {
         try
@@ -88,6 +103,11 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cpf"></param>
+    /// <returns></returns>
     public async Task<UserResponseDto?> GetUserByCpfAsync(string cpf)
     {
         try
@@ -103,6 +123,11 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
     public async Task<UserResponseDto?> GetUserByEmailAsync(string email)
     {
         try
@@ -118,6 +143,12 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cpf"></param>
+    /// <param name="email"></param>
+    /// <returns></returns>
     public async Task<bool> UserExistsAsync(string cpf, string email)
     {
         try
@@ -137,6 +168,12 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
     public async Task<bool> ValidatePasswordAsync(Guid userId, string password)
     {
         try
@@ -153,6 +190,13 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
     public async Task UpdateUserAsync(Guid userId, UpdateUserRequestDto request)
     {
         try
@@ -173,6 +217,14 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     public async Task ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request)
     {
         try
@@ -199,6 +251,11 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <exception cref="ArgumentException"></exception>
     private void ValidateUserRequest(CreateUserRequestDto request)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
@@ -223,6 +280,11 @@ public class UserService : IUserService
             throw new ArgumentException("CPF inválido");
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
     private bool IsValidEmail(string email)
     {
         try
@@ -236,6 +298,11 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cpf"></param>
+    /// <returns></returns>
     private bool IsValidCpf(string cpf)
     {
         // CPF validation logic (simplified for example)
@@ -243,11 +310,21 @@ public class UserService : IUserService
         return normalized.Length == 11 && normalized.All(char.IsDigit);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cpf"></param>
+    /// <returns></returns>
     private string NormalizeCpf(string cpf)
     {
         return new string(cpf.Where(char.IsDigit).ToArray());
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
     private UserResponseDto MapToUserResponseDto(UserEntity user)
     {
         return new UserResponseDto(
@@ -258,5 +335,152 @@ public class UserService : IUserService
             user.IsActive,
             user.CreatedAt
         );
+    }
+
+    /// <summary>
+    /// Verifica se o usuário existe e se as credenciais são válidas
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    public async Task<CheckUserExistsResponseDto> CheckUserExistsAsync(CheckUserExistsRequestDto request)
+    {
+        try
+        {
+            _logger.LogInformation("Checking user existence for CPF: {Cpf} or Email: {Email}",
+                request.Cpf, request.Email);
+
+            // Validar request
+            var validationResult = ValidateCheckUserRequest(request);
+            if (!validationResult.IsValid)
+            {
+                return new CheckUserExistsResponseDto(
+                    Exists: false,
+                    IsValidCredentials: false,
+                    Message: validationResult.ErrorMessage
+                );
+            }
+
+            // Buscar usuário por CPF ou Email
+            var user = await FindUserByCpfOrEmailAsync(request.Cpf, request.Email);
+
+            if (user == null)
+            {
+                _logger.LogInformation("User not found for CPF: {Cpf} or Email: {Email}",
+                    request.Cpf, request.Email);
+
+                return new CheckUserExistsResponseDto(
+                    Exists: false,
+                    IsValidCredentials: false,
+                    Message: "Usuário não encontrado"
+                );
+            }
+
+            // Validar senha
+            var isValidPassword = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash);
+
+            if (!isValidPassword)
+            {
+                _logger.LogWarning("Invalid password for user {UserId}", user.Id);
+
+                return new CheckUserExistsResponseDto(
+                    Exists: true,
+                    IsValidCredentials: false,
+                    UserId: user.Id,
+                    Message: "Senha incorreta"
+                );
+            }
+
+            _logger.LogInformation("User found and credentials are valid for user {UserId}", user.Id);
+
+            return new CheckUserExistsResponseDto(
+                Exists: true,
+                IsValidCredentials: true,
+                UserId: user.Id,
+                Message: "Credenciais válidas"
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking user existence for CPF: {Cpf} or Email: {Email}",
+                request.Cpf, request.Email);
+            throw;
+        }
+    }
+
+
+    /// <summary>
+    /// Busca usuário por credenciais (CPF+senha ou Email+senha)
+    /// </summary>
+    /// <param name="cpf"></param>
+    /// <param name="email"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    public async Task<UserResponseDto?> GetUserByCredentialsAsync(string? cpf, string? email, string password)
+    {
+        try
+        {
+            var user = await FindUserByCpfOrEmailAsync(cpf, email);
+
+            if (user == null) return null;
+
+            // Validar senha
+            var isValidPassword = _passwordHasher.VerifyPassword(password, user.PasswordHash);
+
+            return isValidPassword ? MapToUserResponseDto(user) : null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting user by credentials for CPF: {Cpf} or Email: {Email}", cpf, email);
+            throw;
+        }
+    }
+
+
+    /// <summary>
+    /// Valida o request de verificação de usuário
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    private (bool IsValid, string? ErrorMessage) ValidateCheckUserRequest(CheckUserExistsRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Password))
+            return (false, "Senha é obrigatória");
+
+        if (string.IsNullOrWhiteSpace(request.Cpf) && string.IsNullOrWhiteSpace(request.Email))
+            return (false, "CPF ou Email é obrigatório");
+
+        if (!string.IsNullOrWhiteSpace(request.Cpf) && !IsValidCpf(request.Cpf))
+            return (false, "CPF inválido");
+
+        if (!string.IsNullOrWhiteSpace(request.Email) && !IsValidEmail(request.Email))
+            return (false, "Email inválido");
+
+        return (true, null);
+    }
+
+
+    /// <summary>
+    /// Busca usuário por CPF ou Email
+    /// </summary>
+    /// <param name="cpf"></param>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    private async Task<UserEntity?> FindUserByCpfOrEmailAsync(string? cpf, string? email)
+    {
+        if (!string.IsNullOrWhiteSpace(cpf))
+        {
+            var normalizedCpf = NormalizeCpf(cpf);
+            var userByCpf = await _userRepository.GetByCpfAsync(normalizedCpf);
+            if (userByCpf != null) return userByCpf;
+        }
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            var normalizedEmail = email.Trim().ToLower();
+            var userByEmail = await _userRepository.GetByEmailAsync(normalizedEmail);
+            if (userByEmail != null) return userByEmail;
+        }
+
+        return null;
     }
 }
