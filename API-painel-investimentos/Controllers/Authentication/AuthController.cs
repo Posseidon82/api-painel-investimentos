@@ -4,6 +4,7 @@ using API_painel_investimentos.DTO.User;
 using API_painel_investimentos.Models.User;
 using API_painel_investimentos.Services.Authentication.Interfaces;
 using API_painel_investimentos.Services.User.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers.Authentication;
@@ -42,6 +43,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(LoginResponseDto), 200)]
     [ProducesResponseType(401)]
     [ProducesResponseType(400)]
+    [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
         try
@@ -81,6 +83,7 @@ public class AuthController : ControllerBase
     /// <returns></returns>
     [HttpPost("validate-token")]
     [ProducesResponseType(typeof(TokenValidationResponseDto), 200)]
+    [Authorize]
     public async Task<IActionResult> ValidateToken([FromBody] string token)
     {
         try
@@ -107,6 +110,7 @@ public class AuthController : ControllerBase
     [HttpPost("refresh-token")]
     [ProducesResponseType(typeof(LoginResponseDto), 200)]
     [ProducesResponseType(401)]
+    [Authorize]
     public async Task<IActionResult> RefreshToken([FromBody] string token)
     {
         try
@@ -162,6 +166,7 @@ public class AuthController : ControllerBase
     [HttpGet("user-info")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(401)]
+    [Authorize]
     public async Task<IActionResult> GetUserInfo([FromHeader] string token)
     {
         try

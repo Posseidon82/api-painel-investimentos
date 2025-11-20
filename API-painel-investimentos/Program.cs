@@ -22,6 +22,7 @@ using API_painel_investimentos.Services.User.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,9 +30,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 
 
 // Configurar JWT
@@ -84,7 +82,40 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Define o esquema de segurança
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Insira o token JWT no formato: Bearer {seu_token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
 
+    // Aplica o esquema globalmente a todos os endpoints
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+            },
+            new List<string>()
+        }
+    });
+});
 
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -98,6 +129,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.EnableDetailedErrors();
     }
 });
+
 
 // Repositories
 builder.Services.AddScoped<IInvestorProfileRepository, InvestorProfileRepository>();
@@ -115,14 +147,13 @@ builder.Services.AddScoped<IInvestmentSimulationService, InvestmentSimulationSer
 builder.Services.AddScoped<ISimulationStatsService, SimulationStatsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-// Registrar o serviço JWT
-//builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Password Hasher
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
 // Logging
 builder.Services.AddLogging();
+
 
 // Configurar CORS
 builder.Services.AddCors(options =>
@@ -134,6 +165,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
 
 var app = builder.Build();
 

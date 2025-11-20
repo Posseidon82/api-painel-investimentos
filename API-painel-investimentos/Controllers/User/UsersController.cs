@@ -1,6 +1,7 @@
 ﻿using API_painel_investimentos.DTO.User;
 using API_painel_investimentos.Exceptions;
 using API_painel_investimentos.Services.User.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers.User;
@@ -25,6 +26,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(CreateUserResponseDto), 201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(409)]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto request)
     {
         try
@@ -48,6 +50,7 @@ public class UsersController : ControllerBase
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> GetUserById(Guid userId)
     {
         try
@@ -70,6 +73,7 @@ public class UsersController : ControllerBase
     [HttpGet("cpf/{cpf}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> GetUserByCpf(string cpf)
     {
         try
@@ -92,6 +96,7 @@ public class UsersController : ControllerBase
     [HttpGet("email/{email}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> GetUserByEmail(string email)
     {
         try
@@ -115,6 +120,7 @@ public class UsersController : ControllerBase
     //[ProducesResponseType(typeof(bool), 200)]
     [ProducesResponseType(typeof(CheckUserExistsResponseDto), 200)]
     [ProducesResponseType(400)]
+    [Authorize]
     public async Task<IActionResult> CheckUserExists([FromBody] CheckUserExistsRequestDto request)
     //public async Task<IActionResult> CheckUserExists([FromBody] CreateUserRequestDto request)
     {
@@ -132,33 +138,11 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpPost("authenticate")]
-    [ProducesResponseType(typeof(UserResponseDto), 200)]
-    [ProducesResponseType(401)]
-    [ProducesResponseType(404)]
-    public async Task<IActionResult> AuthenticateUser([FromBody] CheckUserExistsRequestDto request)
-    {
-        try
-        {
-            var user = await _userService.GetUserByCredentialsAsync(request.Cpf, request.Email, request.Password);
-
-            if (user == null)
-                return Unauthorized("CPF/Email ou senha incorretos");
-
-            return Ok(user);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error authenticating user");
-            return StatusCode(500, "Erro interno ao autenticar usuário");
-        }
-    }
-
-
     [HttpPut("{userId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserRequestDto request)
     {
         try
@@ -186,6 +170,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangePasswordRequestDto request)
     {
         try
