@@ -28,6 +28,11 @@ public class AuthService : IAuthService
         _logger = logger;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     public async Task<LoginResponseDto?> AuthenticateAsync(LoginRequestDto request)
     {
         try
@@ -45,16 +50,8 @@ public class AuthService : IAuthService
                 return null;
             }
 
-
-            var userEntity = new UserEntity(user.Name, user.Cpf, user.Email, "");
-            //{
-            //    Id = user.UserId,
-            //    CreatedAt = user.CreatedAt,
-            //    IsActive = user.IsActive
-            //};
-
             // Gerar token
-            //var userEntity = await _userService.GetUserByIdAsync(user.UserId);
+            var userEntity = await _userService.GetUserEntityByIdAsync(user.UserId);
             if (userEntity == null) return null;
 
             var token = GenerateToken(userEntity);
@@ -78,6 +75,11 @@ public class AuthService : IAuthService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
     public string GenerateToken(UserEntity user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -107,6 +109,11 @@ public class AuthService : IAuthService
         return tokenHandler.WriteToken(token);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
     public async Task<TokenValidationResponseDto> ValidateTokenAsync(string token)
     {
         try
@@ -165,6 +172,11 @@ public class AuthService : IAuthService
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
     public async Task<UserResponseDto?> GetUserFromTokenAsync(string token)
     {
         var validationResult = await ValidateTokenAsync(token);

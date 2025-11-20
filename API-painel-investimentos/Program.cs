@@ -116,7 +116,7 @@ builder.Services.AddScoped<ISimulationStatsService, SimulationStatsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 // Registrar o serviço JWT
-builder.Services.AddScoped<IJwtService, JwtService>();
+//builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Password Hasher
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();

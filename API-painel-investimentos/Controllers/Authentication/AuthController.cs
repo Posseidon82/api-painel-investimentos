@@ -8,23 +8,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers.Authentication;
 
+/// <summary>
+/// 
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IJwtService _jwtService;
+    //private readonly IJwtService _jwtService;
     private readonly IAuthService _authService;
     private readonly IUserService _userService;
     private readonly ILogger<UsersController> _logger;
 
     public AuthController(
-        IJwtService jwtService, 
+        //IJwtService jwtService, 
         IAuthService authService,
         IUserService userService,
         ILogger<UsersController> logger
     )
     {
-        _jwtService = jwtService;
+        //_jwtService = jwtService;
         _authService = authService;
         _userService = userService;
         _logger = logger;
@@ -159,12 +162,10 @@ public class AuthController : ControllerBase
     [HttpGet("user-info")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(401)]
-    public async Task<IActionResult> GetUserInfo()
+    public async Task<IActionResult> GetUserInfo([FromHeader] string token)
     {
         try
         {
-            // Extrair token do header Authorization
-            var token = ExtractTokenFromHeader();
             if (string.IsNullOrEmpty(token))
                 return Unauthorized("Token não fornecido");
 
@@ -185,17 +186,4 @@ public class AuthController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    private string? ExtractTokenFromHeader()
-    {
-        var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-
-        if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
-            return null;
-
-        return authorizationHeader.Substring("Bearer ".Length).Trim();
-    }
 }

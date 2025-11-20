@@ -84,6 +84,7 @@ public class UserService : IUserService
         }
     }
 
+
     /// <summary>
     /// 
     /// </summary>
@@ -102,6 +103,26 @@ public class UserService : IUserService
             throw;
         }
     }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public async Task<UserEntity?> GetUserEntityByIdAsync(Guid userId)
+    {
+        try
+        {
+            return await _userRepository.GetByIdAsync(userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting user entity by ID: {UserId}", userId);
+            throw;
+        }
+    }
+
 
     /// <summary>
     /// 
