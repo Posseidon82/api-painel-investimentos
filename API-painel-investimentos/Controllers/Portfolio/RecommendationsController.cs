@@ -21,6 +21,12 @@ public class RecommendationsController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Recupera uma lista de produtos de investimento adequadas ao perfil de investidor calculado
+    /// a partir das respostas do usuário ao questionário de avaliação de perfil de investidor
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     [HttpGet("user/{userId}")]
     [ProducesResponseType(typeof(RecommendationResultDto), 200)]
     [ProducesResponseType(404)]
@@ -38,6 +44,11 @@ public class RecommendationsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost("profile-based")]
     [ProducesResponseType(typeof(RecommendationResultDto), 200)]
     public async Task<IActionResult> GetRecommendationsByProfile([FromBody] RecommendationRequestDto request)
@@ -70,6 +81,12 @@ public class RecommendationsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Retorna a lista de produtos de investimento disponíveis de acordo com o perfil de investimento informado: 
+    /// Conservative, Moderate, Agressive
+    /// </summary>
+    /// <param name="profileType"></param>
+    /// <returns></returns>
     [HttpGet("products/{profileType}")]
     [ProducesResponseType(typeof(List<InvestmentProductDto>), 200)]
     public async Task<IActionResult> GetProductsByProfile(string profileType)

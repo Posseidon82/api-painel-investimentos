@@ -20,6 +20,11 @@ public class SimulationsController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Simula um investimento com base no capital aplicado, quantidade de meses e produto escolhido.
+    /// </summary>
+    /// <param name="request">Um objeto contendo o userId, valor investido, quantidade de meses e uma lista de productIds.</param>
+    /// <returns>Retorna </returns>
     [HttpPost]
     [ProducesResponseType(typeof(SimulationResultDto), 200)]
     [ProducesResponseType(400)]
@@ -48,6 +53,11 @@ public class SimulationsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Recupera a lista de simulações de um usuário a partir de seu userId
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     [HttpGet("user/{userId}")]
     [ProducesResponseType(typeof(List<SimulationHistoryDto>), 200)]
     public async Task<IActionResult> GetUserSimulations(Guid userId)
@@ -64,6 +74,11 @@ public class SimulationsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Recupera uma simulação de investimento a partir do id da simulação
+    /// </summary>
+    /// <param name="simulationId"></param>
+    /// <returns></returns>
     [HttpGet("{simulationId}")]
     [ProducesResponseType(typeof(SimulationResultDto), 200)]
     [ProducesResponseType(404)]

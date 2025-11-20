@@ -22,6 +22,13 @@ public class UsersController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Cria uma conta de usuário para dar acesso a plataforma de investimentos
+    /// </summary>
+    /// <param name="request">Um objeto <see cref="CreateUserRequestDto"/> que contém os dados necessários 
+    /// para a criação da conta: nome, cpf, email e password.</param>
+    /// <returns>Retorna um objeto <see cref="CreateUserResponseDto"/> com os dados de: userId, nome, cpf, email 
+    /// e data de criação</returns>
     [HttpPost]
     [ProducesResponseType(typeof(CreateUserResponseDto), 201)]
     [ProducesResponseType(400)]
@@ -47,6 +54,11 @@ public class UsersController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Recupera alguns dados da conta do usuário através de pesquisa pelo userId
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(404)]
@@ -69,7 +81,11 @@ public class UsersController : ControllerBase
         }
     }
 
-
+    /// <summary>
+    /// Recupera alguns dados da conta do usuário através de pesquisa pelo cpf
+    /// </summary>
+    /// <param name="cpf"></param>
+    /// <returns></returns>
     [HttpGet("cpf/{cpf}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(404)]
@@ -92,7 +108,11 @@ public class UsersController : ControllerBase
         }
     }
 
-
+    /// <summary>
+    /// Recupera alguns dados da conta do usuário através de pesquisa pelo email.
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
     [HttpGet("email/{email}")]
     [ProducesResponseType(typeof(UserResponseDto), 200)]
     [ProducesResponseType(404)]
@@ -115,7 +135,11 @@ public class UsersController : ControllerBase
         }
     }
 
-
+    /// <summary>
+    /// Verifica se a conta do usuário existe.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost("check-exists")]
     //[ProducesResponseType(typeof(bool), 200)]
     [ProducesResponseType(typeof(CheckUserExistsResponseDto), 200)]
@@ -137,7 +161,12 @@ public class UsersController : ControllerBase
         }
     }
 
-
+    /// <summary>
+    /// Atualiza os dados da conta do usuário.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPut("{userId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
@@ -165,7 +194,12 @@ public class UsersController : ControllerBase
         }
     }
 
-
+    /// <summary>
+    /// Modifica a password da conta do usuário.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPut("{userId}/change-password")]
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]

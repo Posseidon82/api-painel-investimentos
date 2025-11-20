@@ -31,8 +31,10 @@ public class InvestorProfileController : ControllerBase
     /// <summary>
     /// Calcula o perfil de investidor com base nas respostas do questionário de perfil
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
+    /// <param name="request">Um objeto <see cref="CalculateProfileRequest"/> contendo uma lista de 
+    /// <see cref="UserAnswerDto"/> e o UserId do usuário, onde <see cref="UserAnswerDto"/> representa as respostas do usuário ao questionário de perfil."/>
+    /// </param>
+    /// <returns>Retorna um objeto <see cref="ProfileResultDto"/> que representa o perfil de investidor do usuário. </returns>
     [HttpPost("calculate")]
     [ProducesResponseType(typeof(ProfileResultDto), 200)]
     [ProducesResponseType(400)]
@@ -58,8 +60,8 @@ public class InvestorProfileController : ControllerBase
     /// <summary>
     /// Retorna o perfil de investidor anteriormente calculado para um usuário
     /// </summary>
-    /// <param name="userId"></param>
-    /// <returns></returns>
+    /// <param name="userId">O número único associado ao perfil da conta do usuário</param>
+    /// <returns>Retorna um objeto <see cref="ProfileResultDto"/> que representa o perfil de investidor do usuário.</returns>
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(ProfileResultDto), 200)]
     [ProducesResponseType(404)]

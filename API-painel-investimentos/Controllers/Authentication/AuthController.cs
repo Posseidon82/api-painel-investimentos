@@ -35,10 +35,10 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Autentica as credenciais da conta do usuário e retorna um token de acesso
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
+    /// <param name="request">Um objeto com cpf ou email, mais password</param>
+    /// <returns>Retorna o token de acesso à plataforma de investimentos</returns>
     [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponseDto), 200)]
     [ProducesResponseType(401)]
@@ -77,7 +77,7 @@ public class AuthController : ControllerBase
 
 
     /// <summary>
-    /// 
+    /// Verifica a validade do token fornecido
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
@@ -103,9 +103,9 @@ public class AuthController : ControllerBase
 
 
     /// <summary>
-    /// 
+    /// Gera um refresh token a partir do token de acesso válido
     /// </summary>
-    /// <param name="token"></param>
+    /// <param name="token">Token de acesso válido</param>
     /// <returns></returns>
     [HttpPost("refresh-token")]
     [ProducesResponseType(typeof(LoginResponseDto), 200)]
@@ -160,7 +160,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Recupera as informações da conta do usuário através do token de acesso válido
     /// </summary>
     /// <returns></returns>
     [HttpGet("user-info")]

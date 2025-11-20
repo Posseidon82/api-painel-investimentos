@@ -1,4 +1,5 @@
 
+using API_painel_investimentos.Configurations;
 using API_painel_investimentos.Infraestructure.Data;
 using API_painel_investimentos.Models.Authentication;
 using API_painel_investimentos.Repositories.Portfolio;
@@ -23,6 +24,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -115,6 +117,13 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+
+    options.OperationFilter<SwaggerAllowAnonymousFilter>();
+
+    // Habilita comentários XML
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 // DbContext

@@ -1,6 +1,7 @@
 ﻿using API_painel_investimentos.DTO.Profile;
 using API_painel_investimentos.Repositories;
 using API_painel_investimentos.Services.Profile.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers.Profile;
@@ -23,14 +24,15 @@ public class QuestionsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves a list of active questions.
+    /// Recupera uma lista de questões ativas.
     /// </summary>
-    /// <remarks>This method returns a collection of questions that are currently marked as active.  The
-    /// result is returned as a list of <see cref="QuestionDto"/> objects.</remarks>
-    /// <returns>An <see cref="IActionResult"/> containing a list of <see cref="QuestionDto"/> objects  representing the active
-    /// questions, with a status code of 200 (OK).</returns>
+    /// <remarks>Este método retorna um coleção de questões que estão atualmente marcadas como ativas. O
+    /// resultado é retornado como uma lista de objetos <see cref="QuestionDto"/> .</remarks>
+    /// <returns>UM <see cref="IActionResult"/> contendo uma lista de objetos <see cref="QuestionDto"/> representando as questões 
+    /// ativas, com um status code 200 (OK).</returns>
     [HttpGet]
     [ProducesResponseType(typeof(List<QuestionDto>), 200)]
+    [Authorize]
     public async Task<IActionResult> GetActiveQuestions()
     {
         var questions = await _questionService.GetActiveQuestionsAsync();
@@ -38,14 +40,15 @@ public class QuestionsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves the <see cref="QuestionDto"/> object that has the same questionId as the one provided.
+    /// Recupera os dados parametrizados da questão que tem o mesmo questionId fornecido.
     /// </summary>
-    /// <param name="questionId">The unique identifier of the question associated with the question profile.</param>
-    /// <returns>An <see cref="IActionResult"/> containing a <see cref="QuestionDto"/> object  representing the 
-    /// question, with a status code of 200 (OK). A status code 404 (Not Found), if no match is found.</returns>
+    /// <param name="questionId">O identificador único da questão associada com o perfil de questões.</param>
+    /// <returns>Um <see cref="IActionResult"/> contendo um objeto <see cref="QuestionDto"/> representando a 
+    /// questão, com um status code 200 (OK). Um status code 404 (Not Found), se uma correspondeência não for encontrada.</returns>
     [HttpGet("{questionId}")]
     [ProducesResponseType(typeof(QuestionDto), 200)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> GetQuestion(Guid questionId)
     {
         var question = await _questionService.GetQuestionByIdAsync(questionId);

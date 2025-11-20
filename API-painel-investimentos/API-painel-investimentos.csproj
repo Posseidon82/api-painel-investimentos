@@ -7,6 +7,8 @@
     <RootNamespace>API_painel_investimentos</RootNamespace>
     <UserSecretsId>ccc85e63-9f5c-4ac1-bad8-8bc3c3ddb0a9</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
