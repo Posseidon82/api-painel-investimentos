@@ -36,6 +36,11 @@ namespace API_painel_investimentos.Repositories.Portfolio
             }
         }
 
+        /// <summary>
+        /// Retorna os produtos de investimento com o mesmo productId e que estejam ativos
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<InvestmentProduct?> GetByIdAsync(Guid id)
         {
             try

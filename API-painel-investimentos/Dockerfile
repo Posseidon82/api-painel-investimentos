@@ -1,30 +1,38 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
+# Estágio base
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Define variáveis de ambiente padrão para o container
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_HTTP_PORTS=8080
+ENV ASPNETCORE_HTTPS_PORTS=8081
 
-# This stage is used to build the service project
+# Estágio de build
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["API-painel-investimentos/API-painel-investimentos.csproj", "API-painel-investimentos/"]
-RUN dotnet restore "./API-painel-investimentos/API-painel-investimentos.csproj"
+COPY ["API-painel-investimentos.csproj", "."]
+RUN dotnet restore "./API-painel-investimentos.csproj"
 COPY . .
-WORKDIR "/src/API-painel-investimentos"
+WORKDIR "/src/."
 RUN dotnet build "./API-painel-investimentos.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
+# Estágio de publish
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./API-painel-investimentos.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+# Estágio final
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Adicione esta linha para garantir que o appsettings.json esteja presente
+RUN mkdir -p /app && chmod -R 755 /app
+
+#Diretório do volume
+VOLUME /app/data
+
 ENTRYPOINT ["dotnet", "API-painel-investimentos.dll"]

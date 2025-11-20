@@ -30,6 +30,12 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Simula a aplicação do montante, durante o período informado, nos produtos informados
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
     public async Task<SimulationResultDto> SimulateInvestmentAsync(SimulationRequestDto request)
     {
         _logger.LogInformation(
@@ -92,6 +98,11 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         );
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     public async Task<List<SimulationHistoryDto>> GetUserSimulationsAsync(Guid userId)
     {
         var simulations = await _simulationRepository.GetByUserIdAsync(userId);
@@ -106,6 +117,11 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         )).ToList();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="simulationId"></param>
+    /// <returns></returns>
     public async Task<SimulationResultDto?> GetSimulationByIdAsync(Guid simulationId)
     {
         var simulation = await _simulationRepository.GetByIdAsync(simulationId);
@@ -129,6 +145,11 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         );
     }
 
+    /// <summary>
+    /// Faz a validação do preenchimento dos dados de montante e prazo de investimento
+    /// </summary>
+    /// <param name="request"></param>
+    /// <exception cref="ArgumentException"></exception>
     private void ValidateSimulationRequest(SimulationRequestDto request)
     {
         if (request.InvestedAmount <= 0)
@@ -141,15 +162,22 @@ public class InvestmentSimulationService : IInvestmentSimulationService
             throw new ArgumentException("O período de investimento não pode exceder 360 meses");
     }
 
-    private async Task<List<InvestmentProduct>> GetProductsForSimulation(
-        SimulationRequestDto request, string profileType)
+    /// <summary>
+    /// Recupera os parâmetros dos produtos de investimentos indicados ou, caso não informado algum 
+    /// retorna os produtos de investimento referentes ao mesmo perfil de investidor do usuário
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="profileType"></param>
+    /// <returns>Retorna uma lista com os parâmetros dos produtos de investimento</returns>
+    private async Task<List<InvestmentProduct>> GetProductsForSimulation(SimulationRequestDto request, string profileType)
     {
+        //Verifica se foi passado id de algum produto
         if (request.ProductIds?.Any() == true)
         {
-            // Simular produtos específicos
-            var products = new List<InvestmentProduct>();
+            var products = new List<InvestmentProduct>(); // Cria lista para guardar os parametros dos produtos de investimento
             foreach (var productId in request.ProductIds)
             {
+                // Recupera os parâmetros do produto indicado
                 var product = await _productRepository.GetByIdAsync(productId);
                 if (product != null && product.IsActive)
                     products.Add(product);
@@ -163,10 +191,16 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         }
     }
 
-    private List<ProductAllocation> CalculateProductAllocation(
-        List<InvestmentProduct> products, decimal totalAmount, string profileType)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="products"></param>
+    /// <param name="totalAmount"></param>
+    /// <param name="profileType"></param>
+    /// <returns></returns>
+    private List<ProductAllocation> CalculateProductAllocation(List<InvestmentProduct> products, decimal totalAmount, string profileType)
     {
-        var allocations = new List<ProductAllocation>();
+        var allocations = new List<ProductAllocation>(); // Parametros de produto e montante
 
         // Distribuição baseada no perfil
         var distribution = GetProfileDistribution(profileType, products.Count);
@@ -200,6 +234,12 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         return allocations;
     }
 
+    /// <summary>
+    /// Distribui o 
+    /// </summary>
+    /// <param name="profileType"></param>
+    /// <param name="productCount"></param>
+    /// <returns></returns>
     private float[] GetProfileDistribution(string profileType, int productCount)
     {
         return profileType.ToLower() switch
@@ -211,8 +251,13 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         };
     }
 
-    private ProductSimulationDto SimulateProductInvestment(
-        ProductAllocation allocation, int months)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="allocation"></param>
+    /// <param name="months"></param>
+    /// <returns></returns>
+    private ProductSimulationDto SimulateProductInvestment(ProductAllocation allocation, int months)
     {
         var product = allocation.Product;
 
@@ -243,6 +288,11 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         );
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="months"></param>
+    /// <returns></returns>
     private decimal CalculateTaxRate(int months)
     {
         // Tabela regressiva do IR para renda fixa
@@ -255,6 +305,16 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         };
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="profile"></param>
+    /// <param name="totalGrossReturn"></param>
+    /// <param name="totalNetReturn"></param>
+    /// <param name="totalAmount"></param>
+    /// <param name="productSimulations"></param>
+    /// <returns></returns>
     private async Task<InvestmentSimulation> SaveSimulationAsync(
         SimulationRequestDto request,
         InvestorProfile profile,

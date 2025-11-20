@@ -1,0 +1,5 @@
+- Executar o arquivo <set-and-run-image.bat> para gerar a imagem com volume, banco de dados e iniciar um container;
+
+- Esse arquivo também pode ser utilizado para executar a mesma imagem no mesmo container;
+
+- Acessar a seguinte URL para poder efetuar os testes no swagger: http://localhost:8080/swagger/index.html
