@@ -1,0 +1,134 @@
+# API-painel-investimentos
+
+- Executar o arquivo <set-and-run-image.bat> para gerar a imagem com volume, banco de dados e iniciar um container;
+
+- Esse arquivo também pode ser utilizado para executar a mesma imagem no mesmo container;
+
+- Acessar a seguinte URL para poder efetuar os testes no swagger: http://localhost:8080/swagger/index.html
+
+# Pipeline do uso básico dos endpoints:
+
+1 - Inicialmente, o usuário deve criar uma conta de login. Para isso, deve usar o endpoint /api/Users.
+Deve ser feita uma requisição POST enviando, no body da request, os seguintes dados:
+{
+  "name": "string",
+  "cpf": "string",
+  "email": "string",
+  "password": "string"
+}
+Se criada com sucesso, receberá um status code 201 e a seguinte resposta:
+{
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "string",
+  "cpf": "string",
+  "email": "string",
+  "createdAt": "2025-11-20T13:40:48.215Z"
+}
+
+1.1 - Os demais endpoints de User são auxiliares;
+
+2 - Após criada a conta, ir ao endpoint /api/Auth/login e fazer uma requisição POST enviando, no body da request, cpf ou email, mais password usados para criar a conta:
+{
+  "password": "string",
+  "cpf": "string",
+  "email": "string"
+}
+Se a autenticação for bem sucedida, será recebido um status code 200 e a seguinte resposta:
+{
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "string",
+  "email": "string",
+  "token": "string",
+  "expiresAt": "2025-11-20T13:58:15.482Z",
+  "tokenType": "string"
+}
+
+2.2 - Os demais endpoints de Auth são auxiliares;
+
+3 - Já autenticado, fazer uma requisição GET para o endpoint /api/Questions e recuperar a lista de questões a serem respondidas para definição do perfil de investidor;
+
+4 - Para calcular o perfil de investidor, efetuar uma requisição POST para o endpoint /api/InvestorProfile/calculate enviando, no body da request, um JSON no seguinte formato:
+
+{
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "answers": [
+    {
+      "questionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "answerOptionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+  ]
+}
+
+onde answers deve ter o id da questão e o id da opção escolhida para a questão, de cada uma das questões da lista de questões recuperadas no endpoint /api/Questions.
+
+Exemplo para realizar teste, altere o userId para o seu:
+{
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "answers": [
+    {
+      "questionId": "0ba34fac-6b19-436f-a8f6-2f57fbfea50b",
+      "answerOptionId": "662e26c3-44c5-4664-860f-69c3105e6941"
+    },
+    {
+      "questionId": "37efd6df-8a77-4ca3-ab2b-bed2359bd1fa",
+      "answerOptionId": "42234641-35c5-417a-8294-e3583a8f0b45"
+    },
+    {
+      "questionId": "0683c61b-0726-48e0-9db8-f309b2e6dd0a",
+      "answerOptionId": "02a2b232-24a6-4c42-b658-35cb6bffacfb"
+    },
+    {
+      "questionId": "79892a74-ba3d-47a2-9a4e-5726fc933317",
+      "answerOptionId": "34a60fcf-4c9e-4bbb-a6ff-0cde26bd3f75"
+    },
+    {
+      "questionId": "00d66811-ce54-4592-9c2e-abeb109e2fc8",
+      "answerOptionId": "1418cd19-4a48-40ec-ab99-15e97e932e24"
+    }
+  ]
+}
+
+5 - Com o perfil de investidor definido, pode-se solicitar recomendações de investimento efetuando uma requisição GET ao endpoint /api/Recommendations/user/{userId} , informando o userId da conta do usuário. Será retornada uma lista com os produtos de investimentos ativos e recomendados para o perfil de investidor do usuário:
+
+{
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "profileType": "string",
+  "profileScore": 0,
+  "recommendedProducts": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "name": "string",
+      "description": "string",
+      "category": "string",
+      "riskLevel": "string",
+      "minimumInvestment": 0,
+      "liquidityDays": 0,
+      "administrationFee": 0,
+      "expectedReturn": 0,
+      "issuer": "string"
+    }
+  ],
+  "suggestedAllocation": {
+    "conservativePercentage": 0,
+    "moderatePercentage": 0,
+    "aggressivePercentage": 0,
+    "suggestedAmount": 0,
+    "description": "string"
+  }
+}
+
+6 - Com a lista de produtos recomendados em mãos, pode-se selecionar os produtos que o usuário deseja simular ou simplesmente deixar que seja simulada uma carteira com os produtos recomendados. Para isso, deve-se fazer uma requisição POST para o endpoint /api/Simulations/SimulateInvestment enviando, no body da request, o seguinte JSON:
+
+{
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "investedAmount": 30000,
+  "investmentMonths": 64,
+  "productIds": [
+    "facb9035-5db4-43c3-95eb-6a74d5b55ca2", 
+    "26e4e463-9781-4363-ba4d-c84a64b48804"
+  ]
+}
+
+A propriedade "productIds" não é obrigatória. Seu não preenchimento faz com que seja simulada uma carteira com os produtos recomendados para o perfil de investidor do usuário.
+
+7 - Para recuperar a lista de simulações realizadas por um usuário, realizar uma requisição GET para o endpoint  /api/Simulations/GetUserSimulations/user/{userId}, informando o userId da conta do usuário como parâmetro da URL;

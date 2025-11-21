@@ -44,8 +44,9 @@ public class RecommendationsController : ControllerBase
         }
     }
 
+
     /// <summary>
-    /// 
+    /// Retorna os produtos de investimento recomendados de acordo com o perfil de investidor e o montante a ser investido
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
@@ -80,6 +81,7 @@ public class RecommendationsController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
 
     /// <summary>
     /// Retorna a lista de produtos de investimento disponíveis de acordo com o perfil de investimento informado: 

@@ -24,6 +24,12 @@ public class InvestmentRecommendationService : IInvestmentRecommendationService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Retorna os produtos de investimento recomendados para o perfil de investimento do usuário
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
     public async Task<RecommendationResultDto> GetRecommendationsAsync(Guid userId)
     {
         _logger.LogInformation("Generating recommendations for user {UserId}", userId);
@@ -54,6 +60,13 @@ public class InvestmentRecommendationService : IInvestmentRecommendationService
         );
     }
 
+
+    /// <summary>
+    /// Retorna uma lista de produtos de investimento ativos do tipo de perfil e montante a ser investido informados
+    /// </summary>
+    /// <param name="profileType"></param>
+    /// <param name="availableAmount"></param>
+    /// <returns></returns>
     public async Task<RecommendationResultDto> GetRecommendationsByProfileAsync(
         string profileType,
         decimal availableAmount)
@@ -79,12 +92,25 @@ public class InvestmentRecommendationService : IInvestmentRecommendationService
         );
     }
 
+
+    /// <summary>
+    /// Retorna uma lista de produtos de investimento ativos do tipo de perfil informado
+    /// </summary>
+    /// <param name="profileType"></param>
+    /// <returns></returns>
     public async Task<List<InvestmentProduct>> GetProductsByProfileAsync(string profileType)
     {
         // Busca direto do banco via repository
         return await _productRepository.GetByProfileAsync(profileType);
     }
 
+
+    /// <summary>
+    /// Ordena os produtos de investimento por ordem de adequação ao perfil de investidor
+    /// </summary>
+    /// <param name="products"></param>
+    /// <param name="profile"></param>
+    /// <returns></returns>
     private List<InvestmentProduct> OrderProductsBySuitability(
         List<InvestmentProduct> products,
         InvestorProfile profile)
@@ -95,6 +121,13 @@ public class InvestmentRecommendationService : IInvestmentRecommendationService
             .ToList();
     }
 
+
+    /// <summary>
+    /// Calcula o score de adequação do produto ao perfil de investidor
+    /// </summary>
+    /// <param name="product"></param>
+    /// <param name="profile"></param>
+    /// <returns></returns>
     private int CalculateSuitabilityScore(InvestmentProduct product, InvestorProfile profile)
     {
         var score = 0;
@@ -125,6 +158,14 @@ public class InvestmentRecommendationService : IInvestmentRecommendationService
         return 100 - score; // Ordenar do mais adequado (menor score) para o menos
     }
 
+
+    /// <summary>
+    /// Calcula a alocação de recursos de acordo com o perfil de investidor
+    /// </summary>
+    /// <param name="profileType"></param>
+    /// <param name="products"></param>
+    /// <param name="availableAmount"></param>
+    /// <returns></returns>
     private PortfolioAllocationDto CalculatePortfolioAllocation(
         string profileType,
         List<InvestmentProduct> products,
@@ -164,6 +205,12 @@ public class InvestmentRecommendationService : IInvestmentRecommendationService
         };
     }
 
+
+    /// <summary>
+    /// Faz o mapeamento do objeto produto de investimento para o DTO produto de investimento
+    /// </summary>
+    /// <param name="product"></param>
+    /// <returns></returns>
     private InvestmentProductDto MapToProductDto(InvestmentProduct product)
     {
         return new InvestmentProductDto(

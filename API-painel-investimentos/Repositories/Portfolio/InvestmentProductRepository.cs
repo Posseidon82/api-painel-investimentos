@@ -18,6 +18,10 @@ namespace API_painel_investimentos.Repositories.Portfolio
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retorna os produtos de investimento ativos
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<InvestmentProduct>> GetActiveProductsAsync()
         {
             try
@@ -35,6 +39,7 @@ namespace API_painel_investimentos.Repositories.Portfolio
                 throw;
             }
         }
+
 
         /// <summary>
         /// Retorna os produtos de investimento com o mesmo productId e que estejam ativos
@@ -56,6 +61,12 @@ namespace API_painel_investimentos.Repositories.Portfolio
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
         public async Task<List<InvestmentProduct>> GetByCategoryAsync(string category)
         {
             try
@@ -73,6 +84,12 @@ namespace API_painel_investimentos.Repositories.Portfolio
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="riskLevel"></param>
+        /// <returns></returns>
         public async Task<List<InvestmentProduct>> GetByRiskLevelAsync(string riskLevel)
         {
             try
@@ -90,6 +107,12 @@ namespace API_painel_investimentos.Repositories.Portfolio
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetProfile"></param>
+        /// <returns></returns>
         public async Task<List<InvestmentProduct>> GetByProfileAsync(string targetProfile)
         {
             try
@@ -108,6 +131,12 @@ namespace API_painel_investimentos.Repositories.Portfolio
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         public async Task UpdateProductAsync(InvestmentProduct product)
         {
             try

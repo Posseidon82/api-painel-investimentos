@@ -39,6 +39,7 @@ public class QuestionsController : ControllerBase
         return Ok(questions);
     }
 
+
     /// <summary>
     /// Recupera os dados parametrizados da questão que tem o mesmo questionId fornecido.
     /// </summary>

@@ -98,8 +98,9 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         );
     }
 
+
     /// <summary>
-    /// 
+    /// Recupera a lista de simulações de um usuário a partir de seu userId
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
@@ -117,8 +118,9 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         )).ToList();
     }
 
+
     /// <summary>
-    /// 
+    /// Recupera uma simulação pelo seu id
     /// </summary>
     /// <param name="simulationId"></param>
     /// <returns></returns>
@@ -145,6 +147,7 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         );
     }
 
+
     /// <summary>
     /// Faz a validação do preenchimento dos dados de montante e prazo de investimento
     /// </summary>
@@ -161,6 +164,7 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         if (request.InvestmentMonths > 360) // 30 anos
             throw new ArgumentException("O período de investimento não pode exceder 360 meses");
     }
+
 
     /// <summary>
     /// Recupera os parâmetros dos produtos de investimentos indicados ou, caso não informado algum 
@@ -191,8 +195,9 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         }
     }
 
+
     /// <summary>
-    /// 
+    /// Calcula a alocação do montante entre os produtos de investimento com base no perfil do investidor
     /// </summary>
     /// <param name="products"></param>
     /// <param name="totalAmount"></param>
@@ -234,8 +239,9 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         return allocations;
     }
 
+
     /// <summary>
-    /// Distribui o 
+    /// Retorna a distribuição percentual dos produtos com base no perfil do investidor
     /// </summary>
     /// <param name="profileType"></param>
     /// <param name="productCount"></param>
@@ -251,8 +257,9 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         };
     }
 
+
     /// <summary>
-    /// 
+    /// Executa a simulação de investimento para a alocação de produto informada
     /// </summary>
     /// <param name="allocation"></param>
     /// <param name="months"></param>
@@ -288,8 +295,9 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         );
     }
 
+
     /// <summary>
-    /// 
+    /// Retorna a alíquota de imposto de renda com base na tabela regressiva
     /// </summary>
     /// <param name="months"></param>
     /// <returns></returns>
@@ -305,8 +313,9 @@ public class InvestmentSimulationService : IInvestmentSimulationService
         };
     }
 
+
     /// <summary>
-    /// 
+    /// Salva a simulação no banco de dados
     /// </summary>
     /// <param name="request"></param>
     /// <param name="profile"></param>
