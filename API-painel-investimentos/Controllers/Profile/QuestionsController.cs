@@ -17,10 +17,12 @@ namespace API_painel_investimentos.Controllers.Profile;
 public class QuestionsController : ControllerBase
 {
     private readonly IQuestionService _questionService;
+    private readonly ILogger<QuestionsController> _logger;
 
-    public QuestionsController(IQuestionService questionService)
+    public QuestionsController(IQuestionService questionService, ILogger<QuestionsController> logger)
     {
         _questionService = questionService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -35,8 +37,16 @@ public class QuestionsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetActiveQuestions()
     {
-        var questions = await _questionService.GetActiveQuestionsAsync();
-        return Ok(questions);
+        try
+        {
+            var questions = await _questionService.GetActiveQuestionsAsync();
+            return Ok(questions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving active questions");
+            return StatusCode(500, "Internal server error");
+        }
     }
 
 
@@ -52,11 +62,19 @@ public class QuestionsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetQuestion(Guid questionId)
     {
-        var question = await _questionService.GetQuestionByIdAsync(questionId);
+        try
+        {
+            var question = await _questionService.GetQuestionByIdAsync(questionId);
 
-        if (question == null)
-            return NotFound();
+            if (question == null)
+                return NotFound();
 
-        return Ok(question);
+            return Ok(question);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving question by ID: {QuestionId}", questionId);
+            return StatusCode(500, "Internal server error");
+        }
     }
 }

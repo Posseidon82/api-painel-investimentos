@@ -1,6 +1,7 @@
 ﻿using API_painel_investimentos.DTO.Profile;
 using API_painel_investimentos.Exceptions;
 using API_painel_investimentos.Services.Profile.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers.Profile;
@@ -38,6 +39,7 @@ public class InvestorProfileController : ControllerBase
     [HttpPost("calculate")]
     [ProducesResponseType(typeof(ProfileResultDto), 200)]
     [ProducesResponseType(400)]
+    [Authorize]
     public async Task<IActionResult> CalculateProfile([FromBody] CalculateProfileRequest request)
     {
         try
@@ -65,6 +67,7 @@ public class InvestorProfileController : ControllerBase
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(ProfileResultDto), 200)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> GetProfile(Guid userId)
     {
         try

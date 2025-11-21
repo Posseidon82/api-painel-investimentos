@@ -1,5 +1,6 @@
 ﻿using API_painel_investimentos.DTO.Simulation;
 using API_painel_investimentos.Services.Simulation.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers.Simulation
@@ -20,8 +21,17 @@ namespace API_painel_investimentos.Controllers.Simulation
             _logger = logger;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="productId"></param>
+        /// <param name="category"></param>
+        /// <returns></returns>
         [HttpGet("products/daily")]
         [ProducesResponseType(typeof(ProductStatsResponseDto), 200)]
+        [Authorize]
         public async Task<IActionResult> GetProductDailyStats(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null,
@@ -48,8 +58,16 @@ namespace API_painel_investimentos.Controllers.Simulation
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="topCount"></param>
+        /// <returns></returns>
         [HttpGet("products/top")]
         [ProducesResponseType(typeof(List<ProductDailyStatsDto>), 200)]
+        [Authorize]
         public async Task<IActionResult> GetTopProducts(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null,
@@ -70,8 +88,16 @@ namespace API_painel_investimentos.Controllers.Simulation
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
         [HttpGet("products/{productId}/daily")]
         [ProducesResponseType(typeof(ProductStatsResponseDto), 200)]
+        [Authorize]
         public async Task<IActionResult> GetProductStatsById(
             Guid productId,
             [FromQuery] DateTime? startDate = null,

@@ -1,6 +1,7 @@
 ﻿using API_painel_investimentos.DTO.Portfolio;
 using API_painel_investimentos.Exceptions;
 using API_painel_investimentos.Services.Portfolio.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers.Portfolio;
@@ -30,6 +31,7 @@ public class RecommendationsController : ControllerBase
     [HttpGet("user/{userId}")]
     [ProducesResponseType(typeof(RecommendationResultDto), 200)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> GetUserRecommendations(Guid userId)
     {
         try
@@ -42,6 +44,11 @@ public class RecommendationsController : ControllerBase
             _logger.LogWarning(ex, "User profile not found for recommendations");
             return NotFound(ex.Message);
         }
+        catch (Exception ex) // ADICIONE ESTE BLOCO
+        {
+            _logger.LogError(ex, "Error generating investment recommendations for user {UserId}", userId);
+            return StatusCode(500, "Internal server error");
+        }
     }
 
 
@@ -52,6 +59,7 @@ public class RecommendationsController : ControllerBase
     /// <returns></returns>
     [HttpPost("profile-based")]
     [ProducesResponseType(typeof(RecommendationResultDto), 200)]
+    [Authorize]
     public async Task<IActionResult> GetRecommendationsByProfile([FromBody] RecommendationRequestDto request)
     {
         try
@@ -91,6 +99,7 @@ public class RecommendationsController : ControllerBase
     /// <returns></returns>
     [HttpGet("products/{profileType}")]
     [ProducesResponseType(typeof(List<InvestmentProductDto>), 200)]
+    [Authorize]
     public async Task<IActionResult> GetProductsByProfile(string profileType)
     {
         try

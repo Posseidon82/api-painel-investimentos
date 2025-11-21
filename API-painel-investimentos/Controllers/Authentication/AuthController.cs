@@ -19,13 +19,13 @@ public class AuthController : ControllerBase
     //private readonly IJwtService _jwtService;
     private readonly IAuthService _authService;
     private readonly IUserService _userService;
-    private readonly ILogger<UsersController> _logger;
+    private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         //IJwtService jwtService, 
         IAuthService authService,
         IUserService userService,
-        ILogger<UsersController> logger
+        ILogger<AuthController> logger
     )
     {
         //_jwtService = jwtService;

@@ -1,6 +1,7 @@
 ﻿using API_painel_investimentos.DTO.Simulation;
 using API_painel_investimentos.Exceptions;
 using API_painel_investimentos.Services.Simulation.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_painel_investimentos.Controllers.Simulation;
@@ -29,6 +30,7 @@ public class SimulationsController : ControllerBase
     [ProducesResponseType(typeof(SimulationResultDto), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> SimulateInvestment([FromBody] SimulationRequestDto request)
     {
         try
@@ -60,6 +62,7 @@ public class SimulationsController : ControllerBase
     /// <returns></returns>
     [HttpGet("user/{userId}")]
     [ProducesResponseType(typeof(List<SimulationHistoryDto>), 200)]
+    [Authorize]
     public async Task<IActionResult> GetUserSimulations(Guid userId)
     {
         try
@@ -82,6 +85,7 @@ public class SimulationsController : ControllerBase
     [HttpGet("{simulationId}")]
     [ProducesResponseType(typeof(SimulationResultDto), 200)]
     [ProducesResponseType(404)]
+    [Authorize]
     public async Task<IActionResult> GetSimulation(Guid simulationId)
     {
         try
