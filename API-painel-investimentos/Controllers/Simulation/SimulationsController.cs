@@ -35,6 +35,12 @@ public class SimulationsController : ControllerBase
     {
         try
         {
+            if (request == null)
+            {
+                _logger.LogWarning("Simulation request is null");
+                return BadRequest("Invalid request body");
+            }
+
             var result = await _simulationService.SimulateInvestmentAsync(request);
             return Ok(result);
         }

@@ -44,6 +44,12 @@ public class InvestorProfileController : ControllerBase
     {
         try
         {
+            if (request == null)
+            {
+                _logger.LogWarning("Invalid request body - request is null");
+                return BadRequest("Invalid request body");
+            }
+
             var result = await _profileService.CalculateProfileAsync(request.UserId, request.Answers);
             return Ok(result);
         }
